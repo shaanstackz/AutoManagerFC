@@ -1,0 +1,5 @@
+/app/data_fetcher.py
+/app/__pycache__/
+requirements.txt
+venv/
+/data/local_data.json
