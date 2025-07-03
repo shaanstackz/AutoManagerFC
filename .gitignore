@@ -1,4 +1,4 @@
-/app/data_fetcher.py
+/app/config.py
 /app/__pycache__/
 requirements.txt
 venv/
