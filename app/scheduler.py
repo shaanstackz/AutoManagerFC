@@ -1,18 +1,39 @@
 import schedule
 import time
-from data_fetcher import fetch_all_players, select_best_lineup
+from app.data_fetcher import fetch_top_scorers
+from app.team_selector import select_best_players
+
 
 def job():
     print("🕒 Running AutoManager...")
-    players = fetch_all_players()
-    best11 = select_best_lineup(players)
+
+    # ✅ fetch players from API
+    players = fetch_top_scorers()
+
+    if not players:
+        print("⚠️ No players fetched, using fallback lineup...")
+        # fallback dummy lineup
+        players = [
+            {"name": f"Player{i}", "team": "Auto FC", "position": pos, "goals": i, "clean_sheets": i // 2}
+            for i, pos in enumerate(
+                ["GK", "DEF", "DEF", "DEF", "DEF", "MID", "MID", "MID", "ATT", "ATT", "ATT"], start=1
+            )
+        ]
+
+    # ✅ pick best 11
+    best11 = select_best_players(players)
+
     print("\n🔝 Starting 11:")
     for player in best11:
-        print(f"{player['name']} ({player['team']}) - {player['position']}")
+        print(
+            f"{player['name']} ({player['team']}) - {player['position']} "
+            f"| Goals: {player.get('goals', 0)}, Clean Sheets: {player.get('clean_sheets', 0)}"
+        )
+
 
 def start_scheduler():
     schedule.every(6).hours.do(job)
-    job()  # Run immediately on start
+    job()  # run immediately on start
 
     while True:
         schedule.run_pending()
